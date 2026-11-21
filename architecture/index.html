@@ -1,0 +1,1497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture | Content QA Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --ground: #0d121e;
+  --surface: #141b2a;
+  --surface-2: #1a2233;
+  --ink: #e8edf4;
+  --ink-soft: #b4bece;
+  --muted: #8592a4;
+  --border: #26314a;
+  --accent: #66a2ee;
+  --accent-soft: #16243c;
+  --accent-line: #2c456b;
+  --warm: #e0a660;
+  --warm-soft: #2a2012;
+  --warm-line: #4a3a1e;
+  --db: #5fc2b0;
+  --db-soft: #10262a;
+  --db-line: #1f4a4a;
+  --type: #b79cf2;
+  --type-soft: #211a36;
+  --type-line: #43366b;
+  --ext: #f28bb8;
+  --ext-soft: #2e1624;
+  --ext-line: #5c2c46;
+  --call: #c3ccd9;
+  --badge-ink: #0d121e;
+  --code-ink: #d6dfee;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 26px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --ground: #f5f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f6;
+    --ink: #19212e;
+    --ink-soft: #404b5c;
+    --muted: #6b7788;
+    --border: #e1e6ed;
+    --accent: #1d5fa8;
+    --accent-soft: #e7f0fa;
+    --accent-line: #bcd4ee;
+    --warm: #b0631a;
+    --warm-soft: #f6ecdf;
+    --warm-line: #e7cfac;
+    --db: #1f7a6c;
+    --db-soft: #e4f2ef;
+    --db-line: #b9ddd6;
+    --type: #6a47c0;
+    --type-soft: #f0ebfb;
+    --type-line: #d4c7f2;
+    --ext: #b8336a;
+    --ext-soft: #fbe9f1;
+    --ext-line: #efc3d6;
+    --call: #3d4757;
+    --badge-ink: #ffffff;
+    --code-ink: #232d3c;
+    --shadow: 0 1px 2px rgba(20, 30, 50, 0.05), 0 6px 20px rgba(20, 30, 50, 0.06);
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ground: #f5f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --ink: #19212e;
+  --ink-soft: #404b5c;
+  --muted: #6b7788;
+  --border: #e1e6ed;
+  --accent: #1d5fa8;
+  --accent-soft: #e7f0fa;
+  --accent-line: #bcd4ee;
+  --warm: #b0631a;
+  --warm-soft: #f6ecdf;
+  --warm-line: #e7cfac;
+  --db: #1f7a6c;
+  --db-soft: #e4f2ef;
+  --db-line: #b9ddd6;
+  --type: #6a47c0;
+  --type-soft: #f0ebfb;
+  --type-line: #d4c7f2;
+  --ext: #b8336a;
+  --ext-soft: #fbe9f1;
+  --ext-line: #efc3d6;
+  --call: #3d4757;
+  --badge-ink: #ffffff;
+  --code-ink: #232d3c;
+  --shadow: 0 1px 2px rgba(20, 30, 50, 0.05), 0 6px 20px rgba(20, 30, 50, 0.06);
+}
+</style>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+</style>
+<style>
+.layout {
+  max-width: 82.5rem;
+  margin-inline: auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.hero {
+  padding-top: 2.5rem;
+}
+
+.hero__eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font: 600 0.75rem/1.3 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  margin: 0.25em 0 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2rem, 4.6vw, 3.1rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.inline-code {
+  padding: 0 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-2);
+  color: var(--code-ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.86em;
+  word-break: break-word;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  flex: 1 1 35rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tabs__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  padding: 0.5rem 0.875rem 0.5625rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.tabs__tab:hover {
+  border-color: var(--accent-line);
+}
+
+.tabs__tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabs__tab[aria-selected="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.tabs__tab[aria-selected="true"] .tabs__name {
+  color: var(--accent);
+}
+
+.tabs__name {
+  color: var(--ink);
+  font-size: 0.90625rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.tabs__sub {
+  color: var(--muted);
+  font: 500 0.71875rem/1.2 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.figure {
+  margin: 0.875rem 0 1.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.figure__hint {
+  display: none;
+  padding: 0.125rem 0.375rem 0.5rem;
+  color: var(--muted);
+  font: 500 0.75rem/1.3 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.figure__scroller {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.figure__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.375rem;
+  margin-top: 0.375rem;
+  padding: 0.625rem 0.375rem 0.25rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font: 500 0.75rem/1.3 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.figure__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map {
+  display: block;
+  width: 100%;
+  min-width: 70rem;
+  height: auto;
+  user-select: none;
+}
+
+.map__zone-box {
+  fill: var(--surface-2);
+  stroke: var(--border);
+  stroke-dasharray: 4 4;
+}
+
+.map__zone-label {
+  fill: var(--muted);
+  font: 600 0.6875rem "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.map__marker-head--call {
+  fill: var(--call);
+}
+
+.map__marker-head--data {
+  fill: var(--db);
+}
+
+.map__marker-head--config {
+  fill: var(--warm);
+}
+
+.map__marker-head--test {
+  fill: var(--type);
+}
+
+.map__marker-head--model {
+  fill: var(--type);
+}
+
+.map__marker-head--ext {
+  fill: var(--ext);
+}
+
+.map__marker-head--doc {
+  fill: var(--muted);
+}
+
+.map-node {
+  cursor: pointer;
+  transition: opacity 0.18s;
+}
+
+.map-node:focus {
+  outline: none;
+}
+
+.map-node:hover .map-node__box,
+.map-node:focus-visible .map-node__box {
+  stroke-width: 2.4;
+}
+
+.map-node--dim {
+  opacity: 0.13;
+}
+
+.map-node__box {
+  stroke-width: 1.4;
+  transition: stroke-width 0.15s;
+}
+
+.map-node__box--selected {
+  stroke-width: 3;
+}
+
+.map-node__box--you {
+  fill: var(--surface);
+  stroke: var(--ink-soft);
+}
+
+.map-node__box--web {
+  fill: var(--surface);
+  stroke: var(--accent-line);
+}
+
+.map-node__box--api {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.map-node__box--model {
+  fill: var(--type-soft);
+  stroke: var(--type);
+}
+
+.map-node__box--test {
+  fill: var(--surface);
+  stroke: var(--type-line);
+}
+
+.map-node__box--secret {
+  fill: var(--warm-soft);
+  stroke: var(--warm);
+}
+
+.map-node__box--config {
+  fill: var(--surface);
+  stroke: var(--warm-line);
+}
+
+.map-node__box--script {
+  fill: var(--surface);
+  stroke: var(--ext-line);
+}
+
+.map-node__box--docker {
+  fill: var(--db-soft);
+  stroke: var(--db);
+}
+
+.map-node__box--site {
+  fill: var(--surface);
+  stroke: var(--db-line);
+}
+
+.map-node__box--doc {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-dasharray: 5 4;
+}
+
+.map-node__box--ext {
+  fill: var(--ext-soft);
+  stroke: var(--ext);
+}
+
+.map-node__box--data {
+  fill: var(--surface);
+  stroke: var(--db);
+}
+
+.map-node__box--crawl {
+  fill: var(--surface);
+  stroke: var(--accent);
+}
+
+.map-node__box--http {
+  fill: var(--surface);
+  stroke: var(--call);
+}
+
+.map-node__box--check {
+  fill: var(--warm-soft);
+  stroke: var(--warm-line);
+}
+
+.map-node__box--app {
+  fill: var(--surface);
+  stroke: var(--accent);
+}
+
+.map-node__box--ai {
+  fill: var(--ext-soft);
+  stroke: var(--ext-line);
+}
+
+.map-node__box--guard {
+  fill: var(--surface);
+  stroke: var(--ext);
+}
+
+.map-node__title {
+  fill: var(--ink);
+  font: 600 0.9375rem "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.map-node__sub {
+  fill: var(--muted);
+  font: 500 0.71875rem "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.map-node__line {
+  fill: var(--ink-soft);
+  font: 500 0.75rem "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.map-node__tag-box {
+  fill: var(--surface-2);
+  stroke: var(--border);
+}
+
+.map-node__tag-text {
+  fill: var(--muted);
+  font: 600 0.625rem "IBM Plex Sans", system-ui, sans-serif;
+  letter-spacing: 0.09em;
+}
+
+.map-node__info {
+  cursor: pointer;
+}
+
+.map-node__info:focus {
+  outline: none;
+}
+
+.map-node__info:hover .map-node__info-circle,
+.map-node__info:focus-visible .map-node__info-circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.map-node__info:hover .map-node__info-text,
+.map-node__info:focus-visible .map-node__info-text {
+  fill: var(--badge-ink);
+}
+
+.map-node__info-circle {
+  fill: var(--surface);
+  stroke: var(--muted);
+  stroke-width: 1.2;
+  transition: fill 0.15s, stroke 0.15s;
+}
+
+.map-node__info-text {
+  fill: var(--muted);
+  font: italic 700 0.6875rem Georgia, "Times New Roman", serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.map-edge {
+  transition: opacity 0.18s;
+}
+
+.map-edge:hover .map-edge__line {
+  stroke-width: 3.2;
+}
+
+.map-edge--dim {
+  opacity: 0.13;
+}
+
+.map-edge__hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  cursor: help;
+}
+
+.map-edge__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.map-edge__line--hot {
+  stroke-width: 3.4;
+}
+
+.map-edge__line--call {
+  stroke: var(--call);
+}
+
+.map-edge__line--data {
+  stroke: var(--db);
+}
+
+.map-edge__line--config {
+  stroke: var(--warm);
+  stroke-dasharray: 7 5;
+}
+
+.map-edge__line--test {
+  stroke: var(--type);
+  stroke-dasharray: 7 5;
+}
+
+.map-edge__line--model {
+  stroke: var(--type);
+}
+
+.map-edge__line--ext {
+  stroke: var(--ext);
+}
+
+.map-edge__line--doc {
+  stroke: var(--muted);
+  stroke-dasharray: 1.5 5;
+  stroke-linecap: round;
+}
+
+.map-edge__label {
+  font: 500 0.6875rem "IBM Plex Mono", ui-monospace, monospace;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+.map-edge__label--call {
+  fill: var(--ink-soft);
+}
+
+.map-edge__label--data {
+  fill: var(--db);
+}
+
+.map-edge__label--config {
+  fill: var(--warm);
+}
+
+.map-edge__label--test,
+.map-edge__label--model {
+  fill: var(--type);
+}
+
+.map-edge__label--ext {
+  fill: var(--ext);
+}
+
+.map-edge__label--doc {
+  fill: var(--muted);
+}
+
+.map-badge {
+  cursor: help;
+}
+
+.map-badge__circle {
+  stroke: var(--surface);
+  stroke-width: 2.5;
+}
+
+.map-badge__circle--call {
+  fill: var(--call);
+}
+
+.map-badge__circle--data {
+  fill: var(--db);
+}
+
+.map-badge__circle--config {
+  fill: var(--warm);
+}
+
+.map-badge__circle--test,
+.map-badge__circle--model {
+  fill: var(--type);
+}
+
+.map-badge__circle--ext {
+  fill: var(--ext);
+}
+
+.map-badge__circle--doc {
+  fill: var(--muted);
+}
+
+.map-badge__text {
+  fill: var(--badge-ink);
+  font: 700 0.71875rem "IBM Plex Sans", system-ui, sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.guide {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 52rem;
+}
+
+.guide--hidden {
+  display: none;
+}
+
+.guide__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.guide__title {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.guide__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.guide__nav {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font: 600 0.875rem/1 "IBM Plex Sans", system-ui, sans-serif;
+  cursor: pointer;
+  appearance: none;
+}
+
+.guide__nav:hover {
+  border-color: var(--accent-line);
+}
+
+.guide__nav:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.guide__nav:disabled {
+  border-color: var(--border);
+  color: var(--muted);
+  opacity: 0.45;
+  cursor: default;
+}
+
+.guide__nav--hidden {
+  display: none;
+}
+
+.guide__reset {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font: 500 0.75rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  cursor: pointer;
+  appearance: none;
+}
+
+.guide__reset:hover {
+  color: var(--ink);
+}
+
+.guide__reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.guide__reset--hidden {
+  display: none;
+}
+
+.guide__intro {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.guide__list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide__step {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.90625rem;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.guide__step:hover {
+  border-color: var(--accent-line);
+}
+
+.guide__step:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.guide__step[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.guide__num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  color: var(--badge-ink);
+  font: 700 0.75rem/1 "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.guide__num--call {
+  background: var(--call);
+}
+
+.guide__num--data {
+  background: var(--db);
+}
+
+.guide__num--config {
+  background: var(--warm);
+}
+
+.guide__num--test,
+.guide__num--model {
+  background: var(--type);
+}
+
+.guide__num--ext {
+  background: var(--ext);
+}
+
+.guide__num--doc {
+  background: var(--muted);
+}
+
+.guide__ref {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font: 500 0.75rem/1.4 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.modal {
+  width: min(38.75rem, calc(100vw - 2rem));
+  max-height: min(86vh, 57.5rem);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+}
+
+.modal::backdrop {
+  background: rgba(8, 12, 20, 0.5);
+}
+
+.modal__inner {
+  position: relative;
+  padding: 1.375rem 1.5rem 1.5rem;
+}
+
+.modal__close {
+  position: absolute;
+  top: 1.125rem;
+  right: 1.125rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font: 500 0.75rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  cursor: pointer;
+  appearance: none;
+}
+
+.modal__close:hover {
+  color: var(--ink);
+}
+
+.modal__close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.modal__title {
+  margin: 0 0 0.25rem;
+  padding-right: 4.375rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.modal__file {
+  margin: 0 0 0.625rem;
+  color: var(--muted);
+  font: 500 0.78125rem/1.4 "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.modal__text {
+  margin: 0 0 0.625rem;
+  color: var(--ink-soft);
+  font-size: 0.90625rem;
+}
+
+.modal__code {
+  margin: 0.375rem 0 0;
+  padding: 0.625rem 0.75rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--code-ink);
+  font: 500 0.78125rem/1.55 "IBM Plex Mono", ui-monospace, monospace;
+  white-space: pre;
+}
+
+.modal__heading {
+  margin: 1rem 0 0.5rem;
+  color: var(--muted);
+  font: 600 0.71875rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modal__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modal__link {
+  display: grid;
+  grid-template-columns: 0.875rem 1fr;
+  align-items: start;
+  gap: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.modal__swatch {
+  width: 0.875rem;
+  height: 3px;
+  margin-top: 0.625rem;
+  border-radius: 2px;
+}
+
+.modal__swatch--call {
+  background: var(--call);
+}
+
+.modal__swatch--data {
+  background: var(--db);
+}
+
+.modal__swatch--config {
+  background: var(--warm);
+}
+
+.modal__swatch--test,
+.modal__swatch--model {
+  background: var(--type);
+}
+
+.modal__swatch--ext {
+  background: var(--ext);
+}
+
+.modal__swatch--doc {
+  background: var(--muted);
+}
+
+.modal__go {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.modal__go:hover {
+  text-decoration-color: var(--accent);
+}
+
+.modal__go:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 75rem) {
+  .figure__hint {
+    display: block;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  .layout {
+    padding-inline: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+<main class="layout">
+  <section class="hero">
+    <p class="hero__eyebrow">Architecture</p>
+    <h1 class="hero__title">Content QA Agent</h1>
+  </section>
+
+  <div class="toolbar">
+    <div class="tabs" role="tablist" aria-label="Views" data-tabs></div>
+  </div>
+
+  <figure class="figure">
+    <div class="figure__hint">Scroll sideways to see the whole diagram →</div>
+    <div class="figure__scroller"><svg class="map" viewBox="0 0 1400 1070" role="img" aria-label="Diagram of the Content QA Agent: dashboard, API, checks, agent, MCP server, Claude guard and the services they use" data-map></svg></div>
+    <div class="figure__legend" data-legend></div>
+  </figure>
+
+  <section class="guide" aria-live="polite" data-guide>
+    <div class="guide__header">
+      <h2 class="guide__title" data-guide-title>Everything</h2>
+      <div class="guide__controls">
+        <button class="guide__reset guide__reset--hidden" type="button" data-guide-reset>show all steps</button>
+        <button class="guide__nav" type="button" aria-label="Previous step" title="Previous step (← key)" data-guide-prev>←</button>
+        <button class="guide__nav" type="button" aria-label="Next step" title="Next step (→ key)" data-guide-next>→</button>
+      </div>
+    </div>
+    <p class="guide__intro" data-guide-intro></p>
+    <ol class="guide__list" data-guide-list></ol>
+  </section>
+</main>
+
+<dialog class="modal" aria-labelledby="modal-title" data-modal><div class="modal__inner" data-modal-body></div></dialog>
+
+<script>
+const N = {
+  editor: {g: 'you', x: 40, y: 24, w: 300, h: 60, t: 'Editor', s: 'browser · localhost:3000 · :8000/docs',
+    file: 'you',
+    what: `The person who uses the app. The dashboard at <code>localhost:3000</code> lists runs, shows each run's findings and fix proposals, and has a chat page per run. FastAPI's own page at <code>localhost:8000/docs</code> is where a crawl and the AI checks are started.`},
+  assistant: {g: 'you', x: 1172, y: 24, w: 216, h: 60, t: 'AI assistant', s: 'Claude Code · Claude Desktop',
+    file: 'your own AI assistant',
+    what: `Any assistant that speaks MCP, such as Claude Code or Claude Desktop. It brings its own model, so the app pays nothing for what it asks. It can read runs and propose fixes, but never approve them.`},
+  runslist: {g: 'web', x: 60, y: 150, w: 220, h: 76, t: 'Runs list', s: 'web/src/app/page.tsx',
+    lines: ['runs, findings, AI cost'],
+    file: 'web/src/app/page.tsx',
+    what: `The dashboard's home page: the latest runs, each with its number of findings, how many are still open, and what its AI calls cost.`},
+  runpage: {g: 'web', x: 330, y: 150, w: 260, h: 92, t: 'Run page', s: 'web/src/app/runs/[runId]/',
+    lines: ['review findings + fixes', 'CSV · HTML report'],
+    file: 'web/src/app/runs/[runId]/',
+    what: `One run: every finding and every fix the agent proposed, each with <b>Approve</b> and <b>Reject</b> buttons, plus the findings as a CSV or HTML report. This is the only place a fix gets approved, and only by a person.`},
+  chatpage: {g: 'web', x: 640, y: 150, w: 220, h: 92, t: 'Chat page', s: 'web/…/[runId]/chat',
+    lines: ['agent mode', 'ask about one run'],
+    file: 'web/src/app/runs/[runId]/chat/',
+    what: `Agent mode for one run: ask a question in plain words and Claude answers from the run's pages and findings. Fixes it proposes wait on the run page. Every message is a paid Claude call.`},
+  restapi: {g: 'api', x: 300, y: 370, w: 320, h: 76, t: 'REST API', s: 'app/main.py · FastAPI · :8000',
+    lines: ['crawl · AI checks · reviews · chat'],
+    file: 'api/app/main.py',
+    what: `The back end's front door. It starts crawls and AI checks, serves runs, findings and reports to the dashboard, saves reviews and runs the agent chat. It answers only on <code>localhost</code> and refuses requests from other websites.`},
+  mcp: {g: 'api', x: 840, y: 370, w: 300, h: 76, t: 'MCP server', s: 'app/mcp_server.py · stdio',
+    lines: ['makes no AI calls'],
+    file: 'api/app/mcp_server.py',
+    what: `A second way in, for AI assistants. It offers five tools: <code>list_runs</code> plus the four run tools the agent uses. It never calls Claude itself, and it has no tool to approve, reject or publish.`},
+  crawler: {g: 'crawl', x: 50, y: 510, w: 200, h: 92, t: 'Crawler', s: 'sitemap.py · pages.py',
+    lines: ['sitemap → pages', 'same host · 5 MB cap'],
+    file: 'api/app/sitemap.py · api/app/pages.py',
+    what: `Reads the sitemap, then downloads and parses every page on the same host, 4 at a time. It runs no JavaScript, skips anything over 5 MB and refuses private addresses unless told otherwise.`},
+  codechecks: {g: 'check', x: 280, y: 510, w: 200, h: 92, t: 'Code checks', s: 'app/checks/',
+    lines: ['11 rules · no AI', 'alt · headings · links'],
+    file: 'api/app/checks/',
+    what: `Fast, free rules written in code: missing alt text, heading order, missing or badly sized meta descriptions, vague or empty link text and broken links. They find 100% of the planted code problems on the eval pages, with no false alarms.`},
+  aichecks: {g: 'ai', x: 510, y: 510, w: 220, h: 92, t: 'AI checks', s: 'app/ai_checks.py',
+    lines: ['page check · 3 rules', 'vision check · 1 rule'],
+    file: 'api/app/ai_checks.py · api/app/checks/page_check.py · vision_check.py',
+    what: `What code can't judge. The <b>page check</b> sends each page to Claude once for tone, meta wording and unclear headings. The <b>vision check</b> sends each image once to see if its alt text matches the picture. Code runs first, so Claude skips what code already found.`},
+  agent: {g: 'ai', x: 760, y: 510, w: 170, h: 92, t: 'Agent', s: 'app/agent.py',
+    lines: ['up to 8 rounds', 'proposes fixes'],
+    file: 'api/app/agent.py',
+    what: `Answers chat questions about a run. Claude decides which run tool to call, reads the result and carries on, for up to 8 rounds per answer. It can propose exact fixes but never apply them.`},
+  tools: {g: 'data', x: 950, y: 510, w: 200, h: 108, t: 'Run tools', s: 'shared with MCP',
+    lines: ['list_pages · get_page', 'get_findings', 'propose_fix'],
+    file: 'api/app/agent.py · api/app/mcp_server.py',
+    what: `The four tools both the agent and the MCP server use: list a run's pages, read one page, read its findings, and propose a fix. A proposed fix is saved as pending and waits for a person.`},
+  dbcode: {g: 'data', x: 290, y: 660, w: 240, h: 92, t: 'Database code', s: 'runs · findings · proposals',
+    lines: ['runs · pages · findings', 'fix proposals · call log'],
+    file: 'api/app/runs.py · findings.py · proposals.py · calls.py · tables.py',
+    what: `Everything the app saves, through SQLAlchemy: runs and their pages, findings and their review status, fix proposals, and a log of every Claude call with its cost. Alembic migrations create the tables.`},
+  guard: {g: 'guard', x: 560, y: 660, w: 370, h: 92, t: 'Claude guard', s: 'app/claude.py · budget.py · tracing.py',
+    lines: ['monthly budget · 10 calls a minute', 'one call at a time · every call logged'],
+    file: 'api/app/claude.py · api/app/budget.py · api/app/tracing.py',
+    what: `The only way the app calls Claude. Before each call it prices the worst case and reserves it against the monthly budget ($3 by default), so a call that could go over is never sent. Afterwards it charges the real cost, logs the call and traces it in Langfuse.`},
+  website: {g: 'site', x: 50, y: 944, w: 220, h: 76, t: 'Website', s: 'any sitemap.xml',
+    lines: ['demo site: localhost:8080'],
+    file: 'any website · demo-site/',
+    what: `The site being checked. Any site with a sitemap works. The repo includes a demo shop with problems planted on purpose, plus 56 eval pages with a known answer key.`},
+  postgres: {g: 'docker', x: 330, y: 944, w: 220, h: 76, t: 'Postgres 17', s: 'Docker · :5432',
+    lines: ['5 tables'],
+    file: 'docker-compose.yml',
+    what: `The database, run in Docker. Five tables: <code>runs</code>, <code>pages</code>, <code>findings</code>, <code>fix_proposals</code> and <code>claude_calls</code>.`},
+  claudeapi: {g: 'ext', x: 600, y: 944, w: 220, h: 76, t: 'Claude API', s: 'api.anthropic.com',
+    lines: ['claude-haiku-5-5'],
+    file: 'api.anthropic.com',
+    what: `Anthropic's API. The app uses Claude Haiku 5.5: on the eval it matched Opus on every rule for about 3% of the cost. Answers come back as structured JSON.`},
+  langfuse: {g: 'ext', x: 850, y: 944, w: 240, h: 76, t: 'Langfuse Cloud', s: 'OpenTelemetry traces',
+    lines: ['one trace per run or chat'],
+    file: 'cloud.langfuse.com',
+    what: `Where every Claude call can be inspected afterwards: one trace per AI check run or chat message, with each call's prompt, answer, tokens and cost.`}
+};
+
+const E = [
+  {id: 'U1', from: 'editor', to: 'runslist', k: 'call', d: 'M150 84 V150',
+    lab: [], say: 'The editor opens the runs list'},
+  {id: 'U2', from: 'editor', to: 'runpage', k: 'call', d: 'M340 64 H460 V150',
+    lab: [], say: 'and a run page to review it'},
+  {id: 'U3', from: 'editor', to: 'chatpage', k: 'call', d: 'M340 44 H750 V150',
+    lab: [], say: 'and the chat page to ask about it'},
+  {id: 'U4', from: 'editor', to: 'restapi', k: 'call', d: 'M340 32 H1168 V326 H610 V370',
+    lab: [{x: 760, y: 24, t: '/docs: start a crawl, run the AI checks', a: 'middle'}], say: 'Crawls and AI checks are started from the API page'},
+  {id: 'W1', from: 'runslist', to: 'restapi', k: 'call', d: 'M240 226 V312 H330 V370',
+    lab: [], say: 'The runs list asks the API for runs'},
+  {id: 'W2', from: 'runpage', to: 'restapi', k: 'call', d: 'M460 242 V370',
+    lab: [{x: 468, y: 300, t: 'lib/api.ts'}], say: 'The run page reads findings and saves reviews'},
+  {id: 'W3', from: 'chatpage', to: 'restapi', k: 'call', d: 'M750 242 V312 H560 V370',
+    lab: [], say: 'The chat page sends the conversation'},
+  {id: 'M1', from: 'assistant', to: 'mcp', k: 'call', d: 'M1280 84 V408 H1140',
+    lab: [{x: 1288, y: 250, t: 'MCP · stdio'}], say: 'An AI assistant connects over MCP'},
+  {id: 'A1', from: 'restapi', to: 'crawler', k: 'call', d: 'M330 446 V478 H150 V510',
+    lab: [{x: 240, y: 470, t: 'fetch_pages()', a: 'middle'}], say: 'POST /crawl starts the crawler'},
+  {id: 'A2', from: 'restapi', to: 'codechecks', k: 'call', d: 'M380 446 V510',
+    lab: [], say: 'Every page goes through the code checks'},
+  {id: 'A3', from: 'restapi', to: 'dbcode', k: 'call', d: 'M495 446 V660',
+    lab: [], say: 'Runs, findings and reviews are read and saved'},
+  {id: 'A4', from: 'restapi', to: 'aichecks', k: 'call', d: 'M580 446 V510',
+    lab: [{x: 588, y: 482, t: 'ai-checks'}], say: 'POST /runs/{id}/ai-checks starts the AI checks'},
+  {id: 'A5', from: 'restapi', to: 'agent', k: 'call', d: 'M620 408 H800 V510',
+    lab: [{x: 710, y: 400, t: 'chat', a: 'middle'}], say: 'A chat message goes to the agent'},
+  {id: 'M2', from: 'mcp', to: 'tools', k: 'call', d: 'M1050 446 V510',
+    lab: [{x: 1058, y: 482, t: 'same tools'}], say: 'The MCP server uses the same run tools'},
+  {id: 'T1', from: 'agent', to: 'tools', k: 'call', d: 'M930 556 H950',
+    lab: [], say: 'The agent calls the run tools'},
+  {id: 'D1', from: 'codechecks', to: 'dbcode', k: 'data', d: 'M380 602 V660',
+    lab: [], say: 'Code findings are saved with the run'},
+  {id: 'D2', from: 'aichecks', to: 'dbcode', k: 'data', d: 'M520 602 V660',
+    lab: [], say: 'AI findings are saved too'},
+  {id: 'G1', from: 'aichecks', to: 'guard', k: 'call', d: 'M660 602 V660',
+    lab: [{x: 668, y: 636, t: 'create()'}], say: 'Each AI check call goes through the guard'},
+  {id: 'G2', from: 'agent', to: 'guard', k: 'call', d: 'M845 602 V660',
+    lab: [], say: 'So does every agent round'},
+  {id: 'D3', from: 'tools', to: 'dbcode', k: 'data', d: 'M1050 618 V800 H410 V752',
+    lab: [{x: 730, y: 792, t: 'proposals', a: 'middle'}], say: 'The tools read the run and save proposed fixes'},
+  {id: 'X1', from: 'crawler', to: 'website', k: 'call', d: 'M235 602 V944',
+    lab: [{x: 243, y: 780, t: 'GET pages'}], say: 'The crawler downloads the sitemap and pages'},
+  {id: 'X2', from: 'dbcode', to: 'postgres', k: 'call', d: 'M470 752 V944',
+    lab: [{x: 478, y: 880, t: 'SQL'}], say: 'Everything is stored in Postgres'},
+  {id: 'X3', from: 'guard', to: 'claudeapi', k: 'ext', d: 'M700 752 V944',
+    lab: [{x: 708, y: 880, t: 'messages'}], say: 'The guard sends the request to Claude'},
+  {id: 'X4', from: 'guard', to: 'langfuse', k: 'ext', d: 'M880 752 V944',
+    lab: [{x: 888, y: 880, t: 'spans'}], say: 'and traces it in Langfuse'}
+];
+const EI = Object.fromEntries(E.map(e => [e.id, e]));
+
+const KINDS = {
+  call: 'request / call',
+  data: 'data saved',
+  ext: 'call to an outside service'
+};
+
+const ZONES = [
+  {x: 20, y: 128, w: 1140, h: 176, label: 'web/ · Next.js · :3000', bottom: true},
+  {x: 20, y: 340, w: 1140, h: 560, label: 'api/ · FastAPI · :8000', bottom: true},
+  {x: 20, y: 924, w: 1140, h: 124, label: 'Outside the API · Docker and online services', bottom: true}
+];
+
+const VIEWS = [
+  {id: 'all', name: 'Everything', sub: 'every arrow', steps: null,
+    intro: ''},
+  {id: 'crawl', name: 'Check a website', sub: 'POST /crawl',
+    intro: 'How a website gets checked: every page in its sitemap is downloaded, checked by code and saved as one run.',
+    steps: [
+      {e: ['U4'], t: 'The editor starts a crawl with the site\'s <b>sitemap URL</b>.', r: 'POST /crawl'},
+      {e: ['A1', 'X1'], t: 'The <b>crawler</b> reads the sitemap and downloads every page, 4 at a time.', r: 'api/app/sitemap.py · pages.py'},
+      {e: ['A2'], t: 'The <b>code checks</b> run on every page: alt text, headings, meta descriptions, link text and broken links.', r: 'api/app/checks/'},
+      {e: ['D1', 'X2'], t: 'The pages and their findings are <b>saved as a run</b> in Postgres.', r: 'api/app/runs.py · findings.py'}
+    ]},
+  {id: 'ai', name: 'Run the AI checks', sub: 'POST …/ai-checks',
+    intro: 'How Claude checks what code can\'t: tone, meta wording, unclear headings and whether alt text matches the image.',
+    steps: [
+      {e: ['U4', 'A4'], t: 'The editor starts the <b>AI checks</b> on a saved run. Nothing is crawled again.', r: 'POST /runs/{id}/ai-checks'},
+      {e: ['G1'], t: 'Each page and each image becomes one request to the <b>Claude guard</b>. Images code already flagged are skipped.', r: 'api/app/ai_checks.py'},
+      {e: ['X3'], t: 'The guard reserves the worst-case cost against the budget, then sends the request to <b>Claude Haiku 5.5</b>.', r: 'api/app/claude.py · budget.py'},
+      {e: ['X4'], t: 'Every call is <b>traced in Langfuse</b> and logged with its real cost.', r: 'api/app/tracing.py'},
+      {e: ['D2', 'X2'], t: 'Claude\'s answers come back as structured JSON and are <b>saved as findings</b>.', r: 'api/app/findings.py'}
+    ]},
+  {id: 'review', name: 'Review findings', sub: 'the dashboard',
+    intro: 'How a person reviews a run. Nothing changes on the website: every finding and fix waits for a decision.',
+    steps: [
+      {e: ['U1', 'W1'], t: 'The <b>runs list</b> shows every run with its findings and AI cost.', r: 'web/src/app/page.tsx'},
+      {e: ['U2', 'W2'], t: 'The <b>run page</b> shows each finding and proposed fix with Approve and Reject buttons.', r: 'web/src/app/runs/[runId]/'},
+      {e: ['A3', 'X2'], t: 'Each decision is <b>saved</b>, and the findings can be downloaded as a CSV or HTML report.', r: 'api/app/findings.py · report.py'}
+    ]},
+  {id: 'chat', name: 'Chat with the agent', sub: 'agent mode',
+    intro: 'How agent mode answers a question about a run, using tools to read it and propose fixes.',
+    steps: [
+      {e: ['U3', 'W3', 'A5'], t: 'The editor asks a question on the <b>chat page</b>.', r: 'web/src/app/runs/[runId]/chat/'},
+      {e: ['G2', 'X3'], t: 'The <b>agent</b> sends the question and the tool list to Claude through the guard.', r: 'api/app/agent.py'},
+      {e: ['T1', 'D3'], t: 'Claude picks <b>run tools</b> to read pages and findings, for up to 8 rounds.', r: 'list_pages · get_page · get_findings'},
+      {e: ['D3', 'X2'], t: 'With <b>propose_fix</b> it saves exact fixes as pending, and they wait on the run page for a person.', r: 'api/app/proposals.py'}
+    ]},
+  {id: 'mcp', name: 'Use it from an AI assistant', sub: 'MCP server',
+    intro: 'How Claude Code or Claude Desktop can work with the same runs, at no cost to the app.',
+    steps: [
+      {e: ['M1'], t: 'The assistant starts the <b>MCP server</b> and talks to it over stdio.', r: 'api/app/mcp_server.py'},
+      {e: ['M2'], t: 'It gets <b>the same run tools</b> as the agent, plus <code>list_runs</code>.', r: ''},
+      {e: ['D3', 'X2'], t: 'It can read runs and <b>propose fixes</b>, but there is no tool to approve them: that stays on the run page.', r: 'api/app/proposals.py'}
+    ]}
+];
+
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.querySelector('[data-map]');
+const el = (tag, attrs = {}, parent) => {
+  const node = document.createElementNS(NS, tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (parent) parent.appendChild(node);
+  return node;
+};
+const txt = (parent, x, y, cls, text, anchor) => {
+  const node = el('text', {x, y, class: cls}, parent);
+  if (anchor) node.setAttribute('text-anchor', anchor);
+  node.textContent = text;
+  return node;
+};
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const rich = s => s.replace(/<code>/g, '<code class="inline-code">');
+const plain = s => s.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
+const defs = el('defs', {}, svg);
+for (const kind of Object.keys(KINDS)) {
+  const marker = el('marker', {id: 'head-' + kind, viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '11', markerHeight: '11', orient: 'auto-start-reverse', markerUnits: 'userSpaceOnUse'}, defs);
+  el('path', {d: 'M0,0 L10,5 L0,10 z', class: 'map__marker-head map__marker-head--' + kind}, marker);
+}
+
+const zoneLayer = el('g', {}, svg);
+for (const z of ZONES) {
+  el('rect', {class: 'map__zone-box', x: z.x, y: z.y, width: z.w, height: z.h, rx: 16}, zoneLayer);
+  txt(zoneLayer, z.x + 16, z.bottom ? z.y + z.h - 10 : z.y + 24, 'map__zone-label', z.label);
+}
+
+const edgeLayer = el('g', {}, svg);
+const nodeLayer = el('g', {}, svg);
+const badgeLayer = el('g', {}, svg);
+
+const edgeEls = {};
+for (const e of E) {
+  const g = el('g', {class: 'map-edge', 'data-edge': e.id}, edgeLayer);
+  el('title', {}, g).textContent = N[e.from].t + ' → ' + N[e.to].t + ': ' + e.say;
+  el('path', {class: 'map-edge__hit', d: e.d}, g);
+  e.line = el('path', {class: 'map-edge__line map-edge__line--' + e.k, d: e.d, 'marker-end': 'url(#head-' + e.k + ')'}, g);
+  for (const l of e.lab) txt(g, l.x, l.y, 'map-edge__label map-edge__label--' + e.k, l.t, l.a);
+  edgeEls[e.id] = g;
+}
+
+function placeText(n) {
+  let tagLeft = Infinity;
+  if (n.tagText) {
+    const width = n.tagText.getComputedTextLength() + 18;
+    tagLeft = n.x + n.w - 11 - width;
+    n.tagBox.setAttribute('x', tagLeft);
+    n.tagBox.setAttribute('width', width);
+  }
+  const [title, sub, ...lines] = n.texts;
+  const drop = n.x + 14 + title.getComputedTextLength() + 10 > tagLeft ? 24 : 0;
+  title.setAttribute('y', n.y + 26 + drop);
+  sub.setAttribute('y', n.y + 44 + drop);
+  lines.forEach((line, i) => line.setAttribute('y', n.y + 68 + drop + i * 17));
+}
+
+const nodeEls = {};
+for (const [id, n] of Object.entries(N)) {
+  const g = el('g', {class: 'map-node', 'data-node': id, tabindex: '0', role: 'button', 'aria-label': n.t + ': show its connections'}, nodeLayer);
+  n.box = el('rect', {class: 'map-node__box map-node__box--' + n.g, x: n.x, y: n.y, width: n.w, height: n.h, rx: 10}, g);
+  if (n.tag) {
+    n.tagBox = el('rect', {class: 'map-node__tag-box', y: n.y + 11, height: 19, rx: 9.5}, g);
+    n.tagText = txt(g, n.x + n.w - 20, n.y + 24.2, 'map-node__tag-text', n.tag.toUpperCase(), 'end');
+  }
+  const left = n.x + 14;
+  n.texts = [txt(g, left, 0, 'map-node__title', n.t), txt(g, left, 0, 'map-node__sub', n.s), ...(n.lines || []).map(l => txt(g, left, 0, 'map-node__line', l))];
+  placeText(n);
+  const info = el('g', {class: 'map-node__info', tabindex: '0', role: 'button', 'aria-label': 'About ' + n.t}, g);
+  el('circle', {class: 'map-node__info-circle', cx: n.x + n.w - 13, cy: n.y + n.h - 13, r: 8}, info);
+  txt(info, n.x + n.w - 13, n.y + n.h - 12.5, 'map-node__info-text', 'i');
+  el('title', {}, info).textContent = 'What is ' + n.t + '?';
+  info.addEventListener('click', ev => { ev.stopPropagation(); openInfo(id); });
+  info.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); openInfo(id); }
+  });
+  g.addEventListener('click', ev => { ev.stopPropagation(); select(state.sel === id ? null : id); });
+  g.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(state.sel === id ? null : id); }
+  });
+  nodeEls[id] = g;
+}
+svg.addEventListener('click', () => { if (state.sel) select(null); });
+if (document.fonts) document.fonts.ready.then(() => { for (const n of Object.values(N)) placeText(n); render(); });
+
+const legend = document.querySelector('[data-legend]');
+for (const [kind, name] of Object.entries(KINDS)) {
+  const item = document.createElement('span');
+  item.className = 'figure__legend-item';
+  item.innerHTML = `<svg width="34" height="10" aria-hidden="true"><path class="map-edge__line map-edge__line--${kind}" d="M1 5 H26"/><path class="map__marker-head map__marker-head--${kind}" d="M25,1 L33,5 L25,9 z"/></svg>${name}`;
+  legend.appendChild(item);
+}
+
+const state = {view: 'all', sel: null, step: null};
+const viewKey = 'qa-architecture-view:' + document.title.split(' |')[0];
+try {
+  const saved = JSON.parse(localStorage.getItem(viewKey) || 'null');
+  const savedView = saved && VIEWS.find(v => v.id === saved.view);
+  if (savedView) {
+    state.view = savedView.id;
+    if (savedView.steps && Number.isInteger(saved.step) && saved.step >= 0 && saved.step < savedView.steps.length) state.step = saved.step;
+  }
+} catch (e) {}
+
+function saveView() {
+  try { localStorage.setItem(viewKey, JSON.stringify({view: state.view, step: state.step})); } catch (e) {}
+}
+
+const tabs = document.querySelector('[data-tabs]');
+for (const v of VIEWS) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'tabs__tab';
+  button.setAttribute('role', 'tab');
+  button.dataset.view = v.id;
+  button.innerHTML = `<span class="tabs__name">${v.name}</span><span class="tabs__sub">${v.sub}</span>`;
+  tabs.appendChild(button);
+}
+tabs.addEventListener('click', ev => {
+  const button = ev.target.closest('[data-view]');
+  if (!button) return;
+  state.view = button.dataset.view;
+  state.sel = null;
+  state.step = null;
+  render();
+});
+
+const guide = document.querySelector('[data-guide]');
+const guideTitle = document.querySelector('[data-guide-title]');
+const guideIntro = document.querySelector('[data-guide-intro]');
+const guideList = document.querySelector('[data-guide-list]');
+const guideReset = document.querySelector('[data-guide-reset]');
+guideList.addEventListener('click', ev => {
+  const button = ev.target.closest('[data-step]');
+  if (!button) return;
+  const index = Number(button.dataset.step);
+  state.step = state.step === index ? null : index;
+  state.sel = null;
+  render();
+});
+guideReset.addEventListener('click', () => {
+  state.step = null;
+  state.sel = null;
+  render();
+});
+
+const guidePrev = document.querySelector('[data-guide-prev]');
+const guideNext = document.querySelector('[data-guide-next]');
+
+function stepBy(delta) {
+  const steps = VIEWS.find(v => v.id === state.view).steps;
+  if (state.sel || !steps || !steps.length) return false;
+  const target = state.step == null ? (delta > 0 ? 0 : null) : state.step + delta;
+  if (target != null && target >= 0 && target < steps.length) {
+    state.step = target;
+    render();
+  }
+  return true;
+}
+
+guidePrev.addEventListener('click', () => stepBy(-1));
+guideNext.addEventListener('click', () => stepBy(1));
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft' && ev.key !== 'Escape') return;
+  if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || modal.open) return;
+  const focused = document.activeElement;
+  if (focused && focused.closest('[data-view], [data-step], [data-guide-prev], [data-guide-next], [data-node]')) focused.blur();
+  if (ev.key === 'Escape') {
+    if (state.step == null && !state.sel) return;
+    state.step = null;
+    state.sel = null;
+    render();
+    ev.preventDefault();
+    return;
+  }
+  if (stepBy(ev.key === 'ArrowRight' ? 1 : -1)) ev.preventDefault();
+});
+
+function stepKind(step) {
+  return step.e.length ? EI[step.e[0]].k : 'call';
+}
+
+function firstStepOf(steps) {
+  const first = {};
+  steps.forEach((s, i) => s.e.forEach(id => { if (!(id in first)) first[id] = i + 1; }));
+  return first;
+}
+
+function renderGuide(view) {
+  guide.classList.toggle('guide--hidden', !state.sel && !view.steps);
+  const count = state.sel ? 0 : (view.steps || []).length;
+  guidePrev.classList.toggle('guide__nav--hidden', count === 0);
+  guideNext.classList.toggle('guide__nav--hidden', count === 0);
+  guidePrev.disabled = state.step == null || state.step === 0;
+  guideNext.disabled = state.step === count - 1;
+  if (state.sel) {
+    guideTitle.textContent = N[state.sel].t;
+    guideIntro.textContent = 'Showing only the arrows that touch ' + N[state.sel].t + '. Click it again, or an empty part of the map, to go back.';
+    guideList.innerHTML = '';
+    guideReset.classList.add('guide__reset--hidden');
+    return;
+  }
+  guideTitle.textContent = view.name;
+  guideIntro.textContent = view.intro;
+  guideReset.classList.toggle('guide__reset--hidden', state.step == null);
+  guideList.innerHTML = (view.steps || []).map((s, i) => `
+    <li>
+      <button class="guide__step" type="button" aria-pressed="${state.step === i}" data-step="${i}">
+        <span class="guide__num guide__num--${stepKind(s)}">${i + 1}</span>
+        <span>${rich(s.t)}${s.r ? `<span class="guide__ref">${s.r}</span>` : ''}</span>
+      </button>
+    </li>`).join('');
+}
+
+function render() {
+  const view = VIEWS.find(v => v.id === state.view);
+  const steps = view.steps;
+  for (const button of tabs.querySelectorAll('[data-view]')) {
+    button.setAttribute('aria-selected', String(button.dataset.view === state.view));
+  }
+
+  let onEdges;
+  let onNodes;
+  if (state.sel) {
+    onEdges = new Set(E.filter(e => e.from === state.sel || e.to === state.sel).map(e => e.id));
+    onNodes = new Set([state.sel]);
+  } else if (steps) {
+    const active = state.step != null ? [steps[state.step]] : steps;
+    onEdges = new Set(active.flatMap(s => s.e));
+    onNodes = new Set(active.flatMap(s => s.n || []));
+  } else {
+    onEdges = new Set(E.map(e => e.id));
+    onNodes = new Set(Object.keys(N));
+  }
+  onEdges.forEach(id => { onNodes.add(EI[id].from); onNodes.add(EI[id].to); });
+
+  for (const e of E) {
+    edgeEls[e.id].classList.toggle('map-edge--dim', !onEdges.has(e.id));
+    e.line.classList.toggle('map-edge__line--hot', state.step != null && onEdges.has(e.id));
+  }
+  for (const [id, n] of Object.entries(N)) {
+    nodeEls[id].classList.toggle('map-node--dim', !onNodes.has(id));
+    const picked = state.sel === id || (state.step != null && (steps[state.step].n || []).includes(id));
+    n.box.classList.toggle('map-node__box--selected', picked);
+  }
+
+  badgeLayer.replaceChildren();
+  if (steps && !state.sel) {
+    for (const [id, number] of Object.entries(firstStepOf(steps))) {
+      if (state.step != null && !steps[state.step].e.includes(id)) continue;
+      const e = EI[id];
+      const point = e.line.getPointAtLength(e.line.getTotalLength() * 0.5);
+      const g = el('g', {class: 'map-badge'}, badgeLayer);
+      el('circle', {class: 'map-badge__circle map-badge__circle--' + e.k, cx: point.x, cy: point.y, r: 11}, g);
+      txt(g, point.x, point.y + 0.5, 'map-badge__text', String(number));
+      const step = steps[number - 1];
+      el('title', {}, g).textContent = number + '. ' + plain(step.t);
+    }
+  }
+  renderGuide(view);
+  saveView();
+}
+
+const modal = document.querySelector('[data-modal]');
+const modalBody = document.querySelector('[data-modal-body]');
+
+function linkList(list, direction) {
+  if (!list.length) return '<li class="modal__link"><span></span><span>nothing</span></li>';
+  return list.map(e => {
+    const other = direction === 'in' ? e.from : e.to;
+    return `<li class="modal__link"><span class="modal__swatch modal__swatch--${e.k}"></span><span><button class="modal__go" type="button" data-go="${other}">${N[other].t}</button>: ${esc(e.say)}</span></li>`;
+  }).join('');
+}
+
+function openInfo(id) {
+  const n = N[id];
+  const ins = E.filter(e => e.to === id);
+  const outs = E.filter(e => e.from === id);
+  modalBody.innerHTML = `
+    <button class="modal__close" type="button" data-close>close ×</button>
+    <h2 class="modal__title" id="modal-title">${n.t}</h2>
+    <p class="modal__file">${n.file}</p>
+    <p class="modal__text">${rich(n.what)}</p>
+    ${n.code ? `<pre class="modal__code">${esc(n.code)}</pre>` : ''}
+    <h3 class="modal__heading">Comes from (arrows in)</h3>
+    <ul class="modal__links">${linkList(ins, 'in')}</ul>
+    <h3 class="modal__heading">Goes to (arrows out)</h3>
+    <ul class="modal__links">${linkList(outs, 'out')}</ul>`;
+  modal.scrollTop = 0;
+  if (!modal.open) modal.showModal();
+}
+
+modal.addEventListener('click', ev => {
+  const go = ev.target.closest('[data-go]');
+  if (go) { openInfo(go.dataset.go); return; }
+  if (ev.target.closest('[data-close]') || ev.target === modal) modal.close();
+});
+
+function select(id) {
+  state.sel = id;
+  state.step = null;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

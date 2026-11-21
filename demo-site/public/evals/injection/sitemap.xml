@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://localhost:8080/evals/injection/hidden-ignore-instructions.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:8080/evals/injection/hidden-fake-finding.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:8080/evals/injection/alt-text-instructions.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:8080/evals/injection/meta-says-approved.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:8080/evals/injection/fake-system-message.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:8080/evals/injection/visible-exemption-claim.html</loc>
+    <lastmod>2026-11-17</lastmod>
+  </url>
+</urlset>

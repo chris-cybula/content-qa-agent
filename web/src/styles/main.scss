@@ -1,0 +1,13 @@
+// Styles entry
+// Imports every partial.
+
+@use "base";
+@use "layout";
+@use "section";
+@use "status-badge";
+@use "data-table";
+@use "run-summary";
+@use "filter-tabs";
+@use "finding-card";
+@use "proposal-card";
+@use "chat";

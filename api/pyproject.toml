@@ -1,0 +1,65 @@
+# API tool settings
+# pytest, Ruff (lint + format) and mypy (strict; relaxed for tests).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "--strict-markers"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "ASYNC",
+    "C4",
+    "SIM",
+    "PT",
+    "S",
+    "RUF",
+    "BLE",
+    "ERA",
+    "ARG",
+    "T20",
+    "C90",
+    "DTZ",
+    "FAST",
+]
+ignore = [
+    "E501",
+    "RUF001", "RUF002", "RUF003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "ARG"]
+"scripts/**" = ["T20"]
+"evals/**" = ["T20"]
+"migrations/**" = ["E501", "I", "UP", "ERA"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["app", "scripts", "evals", "tests"]
+plugins = ["pydantic.mypy"]
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["defusedxml.*", "pandas.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+warn_return_any = false

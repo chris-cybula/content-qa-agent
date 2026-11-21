@@ -1,0 +1,5 @@
+# Git attributes
+# Keeps the demo shop pages and the architecture map out of GitHub's language stats, so the bar shows only the app's code.
+
+demo-site/** linguist-vendored
+architecture/** linguist-documentation

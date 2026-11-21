@@ -1,0 +1,31 @@
+# Local services
+# Postgres 17 on :5432 (qa/qa login) and the demo site on http://localhost:8080, both reachable from this computer only.
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: qa
+      POSTGRES_PASSWORD: qa
+      POSTGRES_DB: content_qa
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qa -d content_qa"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  demo-site:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./demo-site/public:/usr/share/nginx/html:ro
+
+volumes:
+  db-data:

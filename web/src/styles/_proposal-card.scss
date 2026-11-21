@@ -1,0 +1,106 @@
+// Proposal card block
+// Agent fix proposals with review state.
+
+.proposal-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-warning);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+
+  &--approved {
+    border-left-color: var(--color-done);
+  }
+
+  &--rejected {
+    border-left-color: var(--color-danger);
+    opacity: 0.75;
+  }
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__rule {
+    font-family: var(--font-code);
+    font-size: 1rem;
+  }
+
+  &__page {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__details {
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) 1fr;
+    gap: 0.375rem 1rem;
+    font-size: 0.875rem;
+
+    @media (width <= 40rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__label {
+    color: var(--color-muted);
+    font-weight: 600;
+  }
+
+  &__value {
+    overflow-wrap: anywhere;
+
+    &--new {
+      padding: 0.375rem 0.625rem;
+      border-radius: var(--radius);
+      background: var(--color-warning-soft);
+      font-weight: 600;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__button {
+    padding: 0.375rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    &--approved {
+      border-color: var(--color-done);
+      color: var(--color-done);
+    }
+
+    &--rejected {
+      border-color: var(--color-danger);
+      color: var(--color-danger);
+    }
+
+    &--pending {
+      color: var(--color-muted);
+    }
+  }
+}

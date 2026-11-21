@@ -1,0 +1,53 @@
+// Base styles
+// Colour and spacing tokens, box sizing and body text.
+
+:root {
+  --color-bg: #f7f6f2;
+  --color-surface: #fff;
+  --color-text: #1c1c1a;
+  --color-muted: #5c5b55;
+  --color-border: #e2dfd6;
+  --color-accent: #2f55d4;
+  --color-accent-soft: #e7ecfb;
+  --color-done: #277a4c;
+  --color-done-soft: #e5f3ea;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-warning: #8a5a00;
+  --color-warning-soft: #fbf0d9;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-code: ui-monospace, "Cascadia Code", Consolas, monospace;
+  --radius: 0.5rem;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd {
+  margin: 0;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+button {
+  font: inherit;
+}

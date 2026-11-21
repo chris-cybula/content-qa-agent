@@ -1,0 +1,43 @@
+// Status badge block
+// Pills for API, run and review status.
+
+.status-badge {
+  display: inline-block;
+  padding: 0 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-transform: capitalize;
+  white-space: nowrap;
+
+  &--finished,
+  &--approved {
+    border-color: var(--color-done);
+    background: var(--color-done-soft);
+    color: var(--color-done);
+  }
+
+  &--failed,
+  &--rejected {
+    border-color: var(--color-danger);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+
+  &--running,
+  &--open {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  &--pending {
+    border-color: var(--color-warning);
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+}

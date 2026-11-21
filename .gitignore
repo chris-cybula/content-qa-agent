@@ -1,0 +1,21 @@
+# Git ignore
+# Secrets (.env), virtual env, caches and editor files. .env.example stays tracked.
+
+.env
+.env.*
+!.env.example
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+node_modules/
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db

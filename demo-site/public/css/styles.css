@@ -1,0 +1,136 @@
+.site-header {
+  border-bottom: 1px solid #e6dccd;
+  background: #ffffff;
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.site-header__logo {
+  color: #b5442f;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-header__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.site-header__link {
+  color: #2b2620;
+  text-decoration: none;
+}
+
+.site-header__link:hover,
+.site-header__link:focus-visible {
+  text-decoration: underline;
+}
+
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.page__title {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.page__heading {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.page__subheading {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.page__text {
+  max-width: 40rem;
+  margin: 0 0 1rem;
+}
+
+.page__image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+.page__list {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.page__item {
+  margin-bottom: 0.25rem;
+}
+
+.page__link {
+  color: #b5442f;
+}
+
+.page__link:focus-visible {
+  outline: 2px solid #b5442f;
+  outline-offset: 2px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.product-card {
+  padding: 1rem;
+  border: 1px solid #e6dccd;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.product-card__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.product-card__title {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1.125rem;
+}
+
+.product-card__price {
+  margin: 0;
+  color: #6b6158;
+}
+
+.site-footer {
+  border-top: 1px solid #e6dccd;
+}
+
+.site-footer__text {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  color: #6b6158;
+  font-size: 0.875rem;
+}
